@@ -348,6 +348,7 @@ class BallLife extends Ball {
     switch(this.frame) {
     case 0:
       if ((frames % 90) == 0) {
+        noFill();
         circle(this.position.x, this.position.y, this.radius + 2);
         //this.radius = BALL_RADIUS + 2;
         this.frame++;
