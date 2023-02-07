@@ -94,12 +94,13 @@ void draw() {
 /* GameState Functions */
 void startGame() {
   noFill();
-  strokeWeight(4);
-  textSize(20);
+  strokeWeight(4);  
+  textSize(40);
   stroke(255);
   if (highscore > 0) {
     text("SPIN TO START", 0, 0);
-    text("HIGHSCORE: " + highscore, 0, 20);
+    textSize(20);
+    text("HIGHSCORE: " + highscore, 0, 40);
   } else {
     text("SPIN TO START", 0, 0);
   }
@@ -159,10 +160,11 @@ void playGame() {
 void gameOver() {
   noFill();
   strokeWeight(4);
-  textSize(20);
+  textSize(40);
   stroke(255);
   text("GAME OVER", 0, 0);
-  text("SCORE: " + score, 0, 20);
+  textSize(20);
+  text("SCORE: " + score, 0, 40);
   if (overPause < 300) {
     overPause++;
   } else { 
@@ -175,7 +177,7 @@ void gameFail() {
   noFill();
   strokeWeight(4);
   stroke(255,0,0);
-  text("Game Failed to Load", 0, 0);
+  text("FAILED TO LOAD", 0, 0);
   text("Please Restart", 0, 10);
 }
 
