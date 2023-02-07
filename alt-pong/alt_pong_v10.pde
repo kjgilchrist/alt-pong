@@ -10,7 +10,7 @@ final int DIST_EDGE = 100;
 final int MAX_VEL = 3;
 
 String gameState;
-int frames, timer, multi, score, highscore;
+int frames, timer, multi, score, highscore, overPause;
 // Game over screen and high score?
 
 // Currently not conventional naming for non-constants.
@@ -46,6 +46,7 @@ void setup() {
   multi = 1;
   score = 0;
   highscore = 0;
+  overPause = 0;
 
   // Write objects
   MULTIPLIER = new WriteText("x" + multi, -50, (-displayHeight/2 + 30), 4, 20, color(255));
@@ -96,8 +97,9 @@ void startGame() {
   strokeWeight(4);
   textSize(20);
   stroke(255);
-  if (score > 0) {
-    text("HIGHSCORE: " + highscore, 0, 0);
+  if (highscore > 0) {
+    text("SPIN TO START", 0, 0);
+    text("HIGHSCORE: " + highscore, 0, 20);
   } else {
     text("SPIN TO START", 0, 0);
   }
@@ -155,7 +157,18 @@ void playGame() {
 }
 
 void gameOver() {
-  
+  noFill();
+  strokeWeight(4);
+  textSize(20);
+  stroke(255);
+  text("GAME OVER", 0, 0);
+  text("SCORE: " + score, 0, 20);
+  if (overPause < 300) {
+    overPause++;
+  } else { 
+    overPause = 0;
+    gameState = "START";
+  }
 }
 
 void gameFail() {
@@ -167,7 +180,6 @@ void gameFail() {
 }
 
 /* PADDLE CLASS */
-// Damnit, I do need classes.
 class Paddle {
   PVector polar; // r, theta
   String type = "Paddle";
@@ -183,14 +195,18 @@ class Paddle {
   }
 
   void update() {
-    // Update the amount of movement and check if Game Over.
+    // Update the amount of movement and check if GameOver.
     if (PAD_SIZE < 5) {
       PAD_CHANGE = 1;
     } else {
       PAD_CHANGE = (int) PAD_SIZE / 5;
     }
     if (PAD_SIZE <= 0) {
-      gameState = "START";
+      // Check for new highscore.
+      if(score > highscore) {
+        highscore = score;
+      }
+      gameState = "OVER";
     }
 
     // Update the angle from a key press - outside of class.
