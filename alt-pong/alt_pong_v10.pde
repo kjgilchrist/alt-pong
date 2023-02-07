@@ -3,14 +3,14 @@
   Mouse Wheel or L- and R-Arrow
  */
 
-
 /* GLOBALS */
 final int PAD_THICK = 12;
 final int BALL_RADIUS = 7;
 final int DIST_EDGE = 100;
 final int MAX_VEL = 3;
 
-int gameState, frames, timer, multi, score;
+String gameState;
+int frames, timer, multi, score, highscore;
 // Game over screen and high score?
 
 // Currently not conventional naming for non-constants.
@@ -42,9 +42,10 @@ void setup() {
   PAD_CHANGE = (int) PAD_SIZE / 5;
   frames = 0;
   timer = 0;
-  gameState = 0;
+  gameState = "START";
   multi = 1;
   score = 0;
+  highscore = 0;
 
   // Write objects
   MULTIPLIER = new WriteText("x" + multi, -50, (-displayHeight/2 + 30), 4, 20, color(255));
@@ -68,82 +69,102 @@ void draw() {
   ellipseMode(RADIUS);
   textAlign(CENTER, CENTER);
 
-  // Game State swtich.
+  // GameState switch.
   switch (gameState) {
-    /* If game is not being actively played. */
-  case 0:
-    noFill();
-    strokeWeight(4);
-    textSize(20);
-    stroke(255);
-    if (score > 0) {
-      text("SCORE: " + score, 0, 0);
-    } else {
-      text("SPIN TO START", 0, 0);
-    }
+  // Main Menu.
+  case "START":
+    startGame();
     break;
-    /* Game is being actively played. */
-  case 1:
-    // Draw circular "track". Draw vertical barriers.
-    noFill();
-    strokeWeight(4);
-    stroke(15);
-    circle(0, 0, TRACK_RADIUS);
-    strokeWeight(4);
-    stroke(255);
-    line(-BAR_RADIUS, -displayHeight/2, -BAR_RADIUS, displayHeight/2);
-    line(BAR_RADIUS, -displayHeight/2, BAR_RADIUS, displayHeight/2);
+  // Game is being actively played.
+  case "PLAY":
+    playGame();
+    break;
+  // Game has ended. Will be sent to Main Menu somehow.
+  case "OVER":
+    gameOver();
+    break;
+  // For non-matching switch parameter.
+  default:
+    gameFail();
+    break;
+  }
+}
 
-    // Check if ball is dead, remove. Then add more.
-    balls.removeAll(deadBall);
-    if (balls.size() <= 0) {
+/* GameState Functions */
+void startGame() {
+  noFill();
+  strokeWeight(4);
+  textSize(20);
+  stroke(255);
+  if (score > 0) {
+    text("HIGHSCORE: " + highscore, 0, 0);
+  } else {
+    text("SPIN TO START", 0, 0);
+  }
+}
+
+void playGame() {
+  // Draw circular "track". Draw vertical barriers.
+  noFill();
+  strokeWeight(4);
+  stroke(15);
+  circle(0, 0, TRACK_RADIUS);
+  strokeWeight(4);
+  stroke(255);
+  line(-BAR_RADIUS, -displayHeight/2, -BAR_RADIUS, displayHeight/2);
+  line(BAR_RADIUS, -displayHeight/2, BAR_RADIUS, displayHeight/2);
+
+  // Check if ball is dead, remove. Then add more.
+  balls.removeAll(deadBall);
+  if (balls.size() <= 0) {
+    balls.add(new Ball());
+  }
+
+  // Calculate multiplier and current score.
+  multi = speedMult();
+
+  // Add new balls.
+  if ((frames % 60) == 0) {
+    if (balls.size() > 20 && BOMBS == 0) {
+      balls.add(new BallBomb());
+    } else if (LIFES < 2) {
+      balls.add(new BallLife());
+    } else {
       balls.add(new Ball());
     }
+    score = score + calcScore(multi, balls.size());
+  }
+  if ((frames % 120) == 0) {
+    // Nothing atm
+  }
 
-    // Calculate multiplier and current score.
-    multi = speedMult();
-
-    // Add new balls.
-    if ((frames % 60) == 0) {
-      if (balls.size() > 20 && BOMBS == 0) {
-        balls.add(new BallBomb());
-      } else if (LIFES < 2) {
-        balls.add(new BallLife());
-      } else {
-        balls.add(new Ball());
-      }
-      score = score + calcScore(multi, balls.size());
+  // Do the things with the things.
+  for (Paddle paddle : paddles) {
+    paddle.update();
+    for (Ball ball : balls) {
+      ball.collide(paddle);
+      ball.update();
+      ball.animate();
     }
-    if ((frames % 120) == 0) {
-      // Nothing atm
-    }
+  }
+  frames++;
+  timer = frames/60;
 
-    // Do the things with the things.
-    for (Paddle paddle : paddles) {
-      paddle.update();
-      for (Ball ball : balls) {
-        ball.collide(paddle);
-        ball.update();
-        ball.animate();
-      }
-    }
-    frames++;
-    timer = frames/60;
+  // Show current game state.
+  writeText();
+}
 
-    // Show current game state.
-    writeText();
-    break;
-    /* For non-matching switch parameter. */
-  default:
-    noFill();
-    strokeWeight(4);
-    stroke(255,0,0);
-    text("Game Failed to Load", 0, 0);
-    text("Please Restart", 0, 10);
-    break;
-  } // End Switch
-} // End Draw
+void gameOver() {
+  
+}
 
+void gameFail() {
+  noFill();
+  strokeWeight(4);
+  stroke(255,0,0);
+  text("Game Failed to Load", 0, 0);
+  text("Please Restart", 0, 10);
+}
 
 /* PADDLE CLASS */
 // Damnit, I do need classes.
@@ -169,7 +190,7 @@ class Paddle {
       PAD_CHANGE = (int) PAD_SIZE / 5;
     }
     if (PAD_SIZE <= 0) {
-      gameState = 0;
+      gameState = "START";
     }
 
     // Update the angle from a key press - outside of class.
@@ -389,19 +410,19 @@ class WriteText {
 // In case the wheel doesn't work.
 void keyPressed() {
   switch(gameState) {
-  case 0:
+  case "START":
     //delay(500);
     if (key == CODED) {
       if (keyCode == LEFT) {
         resetGame();
-        gameState = 1;
+        gameState = "PLAY";
       } else if (keyCode == RIGHT) {
         resetGame();
-        gameState = 1;
+        gameState = "PLAY";
       }
     }
     break;
-  case 1:
+  case "PLAY":
     if (key == CODED) {
       if (keyCode == LEFT) {
         paddles.get(0).polar.y -= PAD_CHANGE;
@@ -430,16 +451,16 @@ void keyPressed() {
 // Mouse wheel mapping for record player controller.
 void mouseWheel(MouseEvent event) {
   switch(gameState) {
-  case 0:
+  case "START":
     if (event.getCount() < 0) {
       resetGame();
-      gameState = 1;
+      gameState = "PLAY";
     } else if (event.getCount() > 0) {
       resetGame();
-      gameState = 1;
+      gameState = "PLAY";
     }
     break;
-  case 1:
+  case "PLAY":
     paddles.get(0).polar.y += PAD_CHANGE * event.getCount();
     for (Ball ball : balls) {
       if (event.getCount() < 0) {
