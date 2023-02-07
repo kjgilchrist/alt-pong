@@ -1,6 +1,6 @@
 /*
   Anti-Pong Bullet Hell
-  Mouse Wheel or L- and R-Arrow
+ Mouse Wheel or L- and R-Arrow
  */
 
 /* GLOBALS */
@@ -67,24 +67,25 @@ void draw() {
   // Draw ellipse based on radius not diameter.
   background(0);
   translate(displayWidth/2, displayHeight/2);
+  strokeCap(PROJECT);
   ellipseMode(RADIUS);
   textAlign(CENTER, CENTER);
 
   // GameState switch.
   switch (gameState) {
-  // Main Menu.
+    // Main Menu.
   case "START":
     startGame();
     break;
-  // Game is being actively played.
+    // Game is being actively played.
   case "PLAY":
     playGame();
     break;
-  // Game has ended. Will be sent to Main Menu somehow.
+    // Game has ended. Will be sent to Main Menu somehow.
   case "OVER":
     gameOver();
     break;
-  // For non-matching switch parameter.
+    // For non-matching switch parameter.
   default:
     gameFail();
     break;
@@ -94,7 +95,7 @@ void draw() {
 /* GameState Functions */
 void startGame() {
   noFill();
-  strokeWeight(4);  
+  strokeWeight(4);
   textSize(40);
   stroke(255);
   if (highscore > 0) {
@@ -109,7 +110,7 @@ void startGame() {
 void playGame() {
   // Draw circular "track". Draw vertical barriers.
   noFill();
-  strokeWeight(4);
+  strokeWeight(2);
   stroke(15);
   circle(0, 0, TRACK_RADIUS);
   strokeWeight(4);
@@ -167,7 +168,7 @@ void gameOver() {
   text("SCORE: " + score, 0, 40);
   if (overPause < 300) {
     overPause++;
-  } else { 
+  } else {
     overPause = 0;
     gameState = "START";
   }
@@ -176,7 +177,7 @@ void gameOver() {
 void gameFail() {
   noFill();
   strokeWeight(4);
-  stroke(255,0,0);
+  stroke(255, 0, 0);
   text("FAILED TO LOAD", 0, 0);
   text("Please Restart", 0, 10);
 }
@@ -205,7 +206,7 @@ class Paddle {
     }
     if (PAD_SIZE <= 0) {
       // Check for new highscore.
-      if(score > highscore) {
+      if (score > highscore) {
         highscore = score;
       }
       gameState = "OVER";
@@ -347,12 +348,13 @@ class BallLife extends Ball {
     switch(this.frame) {
     case 0:
       if ((frames % 90) == 0) {
-        this.radius = BALL_RADIUS + 2;
+        circle(this.position.x, this.position.y, this.radius + 2);
+        //this.radius = BALL_RADIUS + 2;
         this.frame++;
       }
       break;
     case 1:
-      this.radius = BALL_RADIUS;
+      //this.radius = BALL_RADIUS;
     default:
       this.frame = 0;
       break;
