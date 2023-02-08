@@ -275,18 +275,18 @@ class Ball {
     PVector fPolar = getPolar(fPosition);
 
     // Check for collision with edges of screen and barricades.
-    if ((fPosition.x) > (BAR_RADIUS)
-      || (fPosition.x) < (-BAR_RADIUS)) {
+    if ((fPosition.x + this.radius) > (BAR_RADIUS)
+      || (fPosition.x - this.radius) < (-BAR_RADIUS)) {
       this.velocity.x *= -1;
     }
-    if ((fPosition.y) > (displayHeight/2)
-      || (fPosition.y) < (-displayHeight/2)) {
+    if ((fPosition.y + this.radius) > (displayHeight/2)
+      || (fPosition.y - this.radius) < (-displayHeight/2)) {
       this.velocity.y *= -1;
     }
 
     // Collision Detection with Paddle
-    if (fPolar.x > (paddle.polar.x - PAD_THICK/2)
-      && fPolar.x < (paddle.polar.x + PAD_THICK/2)
+    if ((fPolar.x + this.radius) > (paddle.polar.x - PAD_THICK/2)
+      && (fPolar.x + this.radius) < (paddle.polar.x + PAD_THICK/2)
       && fPolar.y >= (paddle.polar.y)
       && fPolar.y <= (paddle.polar.y + PAD_SIZE)) {
       // Check if Energized paddle.
@@ -308,8 +308,9 @@ class Ball {
         this.count = 1;
         this.flag++;
         this.bColor = color(0, 0, 255);
+        PAD_SIZE += collChange;
       }
-      PAD_SIZE += collChange;
+      //PAD_SIZE += collChange;
     } else {
       this.flag = 0;
       if (this.count > 0 && this.count < 10) {
@@ -349,6 +350,8 @@ class BallLife extends Ball {
     case 0:
       if ((frames % 90) == 0) {
         noFill();
+        strokeWeight(4);
+        stroke(this.bColor);
         circle(this.position.x, this.position.y, this.radius + 2);
         //this.radius = BALL_RADIUS + 2;
         this.frame++;
