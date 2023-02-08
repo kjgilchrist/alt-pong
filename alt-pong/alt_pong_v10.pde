@@ -544,6 +544,8 @@ void resetGame() {
   // Reset variables.
   PAD_SIZE = 15;
   PAD_CHANGE = (int) PAD_SIZE / 5;
+  LIFES = 0;
+  BOMBS = 0;
   frames = 0;
   timer = 0;
   multi = 1;
