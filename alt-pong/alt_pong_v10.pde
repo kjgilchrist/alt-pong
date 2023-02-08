@@ -94,10 +94,8 @@ void draw() {
 
 /* GameState Functions */
 void startGame() {
-  noFill();
-  strokeWeight(4);
+  fill(255);
   textSize(40);
-  stroke(255);
   if (highscore > 0) {
     text("SPIN TO START", 0, 0);
     textSize(20);
@@ -159,10 +157,8 @@ void playGame() {
 }
 
 void gameOver() {
-  noFill();
-  strokeWeight(4);
+  fill(255);
   textSize(40);
-  stroke(255);
   text("GAME OVER", 0, 0);
   textSize(20);
   text("SCORE: " + score, 0, 40);
@@ -175,11 +171,10 @@ void gameOver() {
 }
 
 void gameFail() {
-  noFill();
-  strokeWeight(4);
-  stroke(255, 0, 0);
+  fill(255, 0, 0);
+  textSize(20);
   text("FAILED TO LOAD", 0, 0);
-  text("Please Restart", 0, 10);
+  text("Please Restart", 0, 20);
 }
 
 /* PADDLE CLASS */
@@ -423,10 +418,8 @@ class WriteText {
   }
 
   void update() {
-    noFill();
-    strokeWeight(this.sWidth);
+    fill(this.tColor);
     textSize(this.tSize);
-    stroke(this.tColor);
     text(this.text, this.x, this.y);
   }
 }
