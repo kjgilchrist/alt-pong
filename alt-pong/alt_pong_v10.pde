@@ -286,9 +286,9 @@ class Ball {
 
     // Collision Detection with Paddle
     if ((fPolar.x + this.radius) > (paddle.polar.x - PAD_THICK/2)
-      && (fPolar.x + this.radius) < (paddle.polar.x + PAD_THICK/2)
-      && fPolar.y >= (paddle.polar.y)
-      && fPolar.y <= (paddle.polar.y + PAD_SIZE)) {
+      && (fPolar.x - this.radius) < (paddle.polar.x + PAD_THICK/2)
+      && (fPolar.y + 1) >= (paddle.polar.y)
+      && (fPolar.y + 1) <= (paddle.polar.y + PAD_SIZE)) {
       // Check if Energized paddle.
       if (paddle.type == "Energy") {
         deadBall.add(this);
@@ -298,6 +298,7 @@ class Ball {
         // Will push in positive direction.
         this.position.x += (PAD_THICK/2 + 1);
         this.position.y += (PAD_THICK/2 + 1);
+        this.velocity.rotate(PI);
         this.flag = 0;
       } else {
         // Calculate the reflected vector based on current direction.
